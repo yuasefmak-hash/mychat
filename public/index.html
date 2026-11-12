@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>MyChat</title>
+  <meta charset="utf-8">
+  <style>
+    body { font-family: sans-serif; max-width: 500px; margin: 30px auto; }
+    #messages { list-style: none; padding: 0; }
+    #messages li { padding: 8px; border-bottom: 1px solid #ccc; }
+    #messages b { color: #2a7; }
+    #form { display: flex; }
+    #input { flex: 1; padding: 10px; }
+    button { padding: 10px 20px; }
+  </style>
+</head>
+<body>
+  <h2>MyChat</h2>
+  <ul id="messages"></ul>
+  <form id="form">
+    <input id="input" autocomplete="off" placeholder="اكتب رسالتك..." />
+    <button>إرسال</button>
+  </form>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    const socket = io();
+    const form = document.getElementById('form');
+    const input = document.getElementById('input');
+    const messages = document.getElementById('messages');
+
+    let username = prompt("اكتب اسمك:") || "زائر";
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      if (input.value) {
+        socket.emit('message', { user: username, text: input.value });
+        input.value = '';
+      }
+    });
+
+    socket.on('message', (data) => {
+      const item = document.createElement('li');
+      item.innerHTML = '<b>' + data.user + ':</b> ' + data.text;
+      messages.appendChild(item);
+    });
+  </script>
+</body>
+</html>
